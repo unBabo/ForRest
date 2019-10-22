@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>socket.io chat</title>
+    <title>モヤ焚き火</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
 </head>
 <body>
     <ul id="messages"></ul>
@@ -22,6 +23,21 @@
             $('#messages').append($('<li>').text(msg));
           });
         });
+    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
+    <script>
+      function setup(){
+        createCanvas(640,480);
+      }
+
+      function draw(){
+        if(mouseIsPressed){
+          fill(0);
+        }else{
+          fill(255);
+        }
+        ellipse(mouseX,mouseY,80,80);
+      }
     </script>
 </body>
 </html>

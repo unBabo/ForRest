@@ -1,16 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
+  <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1">
     <title>モヤ焚き火1</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 
 </head>
-<body>
-    <ul id="messages"></ul>
-    <form id="message_form" action="#">
-      <input id="input_msg" autocomplete="off" /><button>Send</button>
-    </form>
+
   <script>
       var socketio = io();
       $(function(){
@@ -27,24 +25,104 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.js"></script>
     <script>
-    var ptouchX;
-    var ptouchY;
-      function setup(){
-        createCanvas(640,480);
-        background(255);
-        strokeWeight(10);
-        stroke(0);
+    var can;
+    var ct;
+    var ox=0,oy=0,x=0,y=0;
+    var mf=false;
+      function mam_draw_init(){
+        //初期設定
+        can=document.getElementById("can");
+        can.addEventListener("touchstart",onDown,false);
+        can.addEventListener("touchmove",onMove,false);
+        can.addEventListener("touchend",onUp,false);
+        can.addEventListener("mousedown",onMouseDown,false);
+        can.addEventListener("mousemove",onMouseMove,false);
+        can.addEventListener("mouseup",onMouseUp,false);
+        ct=can.getContext("2d");
+        ct.strokeStyle="#000000";
+        ct.lineWidth=5;
+        ct.lineJoin="round";
+        ct.lineCap="round";
+        clearCan();
+      }
+      function onDown(event){
+        mf=true;
+        ox=event.touches[0].pageX-event.target.getBoundingClientRect().left;
+        oy=event.touches[0].pageY-event.target.getBoundingClientRect().top;
+        event.stopPropagation();
+      }
+      function onMove(event){
+        if(mf){
+          x=event.touches[0].pageX-event.target.getBoundingClientRect().left;
+          y=event.touches[0].pageY-event.target.getBoundingClientRect().top;
+          drawLine();
+          ox=x;
+          oy=y;
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }
+      function onUp(event){
+        mf=false;
+        event.stopPropagation();
       }
 
-      function draw(){
-        ptouchX=touches[0].x;
-        ptouchY=touches[0].y;
+      function onMouseDown(event){
+        ox=event.clientX-event.target.getBoundingClientRect().left;
+        oy=event.clientY-event.target.getBoundingClientRect().top ;
+        mf=true;
+      }
+      function onMouseMove(event){
+        if(mf){
+          x=event.clientX-event.target.getBoundingClientRect().left;
+          y=event.clientY-event.target.getBoundingClientRect().top ;
+          drawLine();
+          ox=x;
+          oy=y;
+        }
+      }
+      function onMouseUp(event){
+        mf=false;
+      }
+      function drawLine(){
+        ct.beginPath();
+        ct.moveTo(ox,oy);
+        ct.lineTo(x,y);
+        ct.stroke();
+      }
+      function clearCan(){
+        ct.fillStyle="rgb(255,255,255)";
+        ct.fillRect(0,0,can.getBoundingClientRect().width,can.getBoundingClientRect().height);
       }
 
-      function touchMoved(){
-        line(touches[0].x,touches[0].y,ptouchX,ptouchY);
-        return false;
-      }
     </script>
+
+
+    <body onload="mam_draw_init()">
+        <ul id="messages"></ul>
+        <form id="message_form" action="#">
+          <input id="input_msg" autocomplete="off" /><button>Send</button>
+        </form>
+        <div style="border:solid 1px #000000;width:400px;" id="candiv">
+          <canvas id="can" width="400px" height="300px"></canvas>
+        </div>
+<input type="button" onClick="clearCan();" value="クリア" style="width:100;height:30;" data-inline="true" />
+<button onclick="SaveImage()">保存</button>
+<img src="" id="result" />
+
+<!-- html2canvas部分 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+<script>
+function SaveImage(){
+  html2canvas(document.getElementById("can"),{
+    onrendered: function(canvas){
+      var imgData = canvas.toDataURL();
+      document.getElementById("result").src = imgData;
+    }
+  });
+}
+
+</script>
+
 </body>
 </html>

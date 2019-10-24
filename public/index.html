@@ -25,18 +25,23 @@
         });
     </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.js"></script>
     <script>
+    var ptouchX;
+    var ptouchY;
       function setup(){
         createCanvas(640,480);
+        stroke(0);
       }
 
       function draw(){
-        if(mouseIsPressed){
-          fill(0);
-        }else{
-          fill(255);
-        }
-        ellipse(mouseX,mouseY,80,80);
+        ptouchX=touches[0].x;
+        ptouchY=touches[0].y;
+      }
+
+      function touchMoved(){
+        line(touches[0].x,touches[0].y,ptouchX,ptouchY);
+        return false;
       }
     </script>
 </body>

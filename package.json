@@ -10,9 +10,11 @@
     "type": "git",
     "url": "git+https://github.com/unBabo/ForRest.git"
   },
-  "dependencies":{
-    "express":"^4.17.1",
-    "socket.io":"^2.3.0"
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0",
+    "ua-parser-js": "0.7.20",
+    "useragent": "^2.3.0"
   },
   "author": "",
   "license": "ISC",

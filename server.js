@@ -4,7 +4,15 @@ var http = require('http').Server(app);
 const io = require('socket.io')(http);
 const PORT = process.env.PORT || 7000;
 
+var parser = require('ua-parser-js');
+// var parser = new UAParser();
+
+
+//console.log(parser);
+
 app.get('/' , function(req, res){
+  var ua = parser(req.headers['user-agent']);     // HTTPヘッダよりUser agentを取得
+  console.log(ua.device);
     res.sendFile(__dirname+'/public/index.html');
 });
 

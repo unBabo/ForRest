@@ -13,7 +13,7 @@ var parser = require('ua-parser-js');
 app.get('/' , function(req, res){
   var ua = parser(req.headers['user-agent']);     // HTTPヘッダよりUser agentを取得
   console.log(ua.device);
-  if(ua.device!=null){
+  if(ua.device.model!=undefined){
     res.sendFile(__dirname+'/public/index.html');
   }else{
     res.sendFile(__dirname+'/p5Practice.html');

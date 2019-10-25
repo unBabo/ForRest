@@ -3,11 +3,38 @@
 <head>
   <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="./main.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
     <title>モヤ焚き火1</title>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-
+    <!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
 </head>
+
+<body>
+    <ul id="messages"></ul>
+    <form id="message_form" action="#">
+      <input id="input_msg" autocomplete="off" /><button>Send</button>
+    </form>
+    <!-- <div style="border:solid 1px #000000;width:400px;" id="candiv"> -->
+      <canvas id="can"></canvas>
+      <div>
+        <h3>線の太さ</h3>
+        <button class="option-button" id="button-width-thin">width-thin</button>
+        <button class="option-button" id="button-width-medium">width-mid</button>
+        <button class="option-button" id="button-width-bold">width-bold</button>
+      </div>
+      <div>
+        <h3>線の色</h3>
+        <button class="option-button" id="button-color-black">color-black</button>
+        <button class="option-button" id="button-color-white">color-white</button>
+        <button class="option-button" id="button-color-red">color-red</button>
+         <input class="picker" type="text">
+      </div>
+    </body>
+
+    <!-- </div> -->
 
   <script>
       var socketio = io();
@@ -22,29 +49,96 @@
           });
         });
     </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.js"></script>
     <script>
-    var can;
-    var ct;
-    var ox=0,oy=0,x=0,y=0;
-    var mf=false;
-      function mam_draw_init(){
-        //初期設定
-        can=document.getElementById("can");
-        can.addEventListener("touchstart",onDown,false);
-        can.addEventListener("touchmove",onMove,false);
-        can.addEventListener("touchend",onUp,false);
-        can.addEventListener("mousedown",onMouseDown,false);
-        can.addEventListener("mousemove",onMouseMove,false);
-        can.addEventListener("mouseup",onMouseUp,false);
-        ct=can.getContext("2d");
-        ct.strokeStyle="#000000";
-        ct.lineWidth=5;
-        ct.lineJoin="round";
-        ct.lineCap="round";
-        clearCan();
-      }
+      var ox=0,oy=0,x=0,y=0;
+      var mf=false;
+      const imagePath = "../image.jpg";
+      const canvas = document.getElementById("can");
+      const ctx = canvas.getContext("2d");
+      const button_thin = document.getElementById("button-width-thin")
+      const button_medidum = document.getElementById("button-width-medium")
+      const button_bold = document.getElementById("button-width-bold")
+      const button_black = document.getElementById("button-color-black")
+      const button_white = document.getElementById("button-color-white")
+      const button_red = document.getElementById("button-color-red")
+
+      jQuery(function($){
+        $(".picker").spectrum({
+          move:function(color) {
+            ctx.strokeStyle=color.toHexString()
+          }
+        });
+      });
+
+      ctx.lineJoin="round";
+      ctx.lineCap="round";
+        button_thin.onclick = function() {
+          ctx.lineWidth=3;
+        }
+        button_medidum.onclick = function() {
+          ctx.lineWidth=6;
+        }
+        button_bold.onclick = function() {
+          ctx.lineWidth=10;
+        }
+        button_black.onclick = function() {
+          ctx.strokeStyle="#000000";
+          // JQuery(function($) {
+          //   $(".picker").spectrum("set", "#000000");
+          // })
+        }
+        button_white.onclick = function() {
+          ctx.strokeStyle="#ffffff";
+          // JQuery(function($) {
+          //   $(".picker").spectrum("set", "#ffffff");
+          // })
+        }
+        button_red.onclick = function() {
+          ctx.strokeStyle="#ff0000";
+          // JQuery(function($) {
+          //   $(".picker").spectrum("set", "#ff0000");
+          // })
+        }
+
+        canvas.addEventListener("mousedown",onMouseDown,false);
+        canvas.addEventListener("mousemove",onMouseMove,false);
+        canvas.addEventListener("mouseup",onMouseUp,false);
+        canvas.addEventListener("touchstart",onDown,false);
+        canvas.addEventListener("touchmove",onMove,false);
+        canvas.addEventListener("touchend",onUp,false);
+
+        drawImage(canvas,imagePath);
+
+        function drawImage(canvas,imagePath){
+            //console.log("draw");
+            const image = new Image();
+            image.addEventListener("load",function (){
+                canvas.width = image.naturalWidth;
+                canvas.height = image.naturalHeight;
+
+                ctx.drawImage(image, 0, 0);
+              //  console.log("load!");
+            });
+            image.src = imagePath;
+        }
+
+        function onMouseDown(event){
+          ox=event.clientX-event.target.getBoundingClientRect().left;
+          oy=event.clientY-event.target.getBoundingClientRect().top ;
+          mf=true;
+        }
+        function onMouseMove(event){
+          if(mf){
+            x=event.clientX-event.target.getBoundingClientRect().left;
+            y=event.clientY-event.target.getBoundingClientRect().top ;
+            drawLine();
+            ox=x;
+            oy=y;
+          }
+        }
+        function onMouseUp(event){
+          mf=false;
+        }
       function onDown(event){
         mf=true;
         ox=event.touches[0].pageX-event.target.getBoundingClientRect().left;
@@ -66,46 +160,18 @@
         mf=false;
         event.stopPropagation();
       }
-
-      function onMouseDown(event){
-        ox=event.clientX-event.target.getBoundingClientRect().left;
-        oy=event.clientY-event.target.getBoundingClientRect().top ;
-        mf=true;
-      }
-      function onMouseMove(event){
-        if(mf){
-          x=event.clientX-event.target.getBoundingClientRect().left;
-          y=event.clientY-event.target.getBoundingClientRect().top ;
-          drawLine();
-          ox=x;
-          oy=y;
-        }
-      }
-      function onMouseUp(event){
-        mf=false;
-      }
-      function drawLine(){
-        ct.beginPath();
-        ct.moveTo(ox,oy);
-        ct.lineTo(x,y);
-        ct.stroke();
-      }
+      //
       function clearCan(){
-        ct.fillStyle="rgb(255,255,255)";
-        ct.fillRect(0,0,can.getBoundingClientRect().width,can.getBoundingClientRect().height);
+        ctx.fillStyle="rgb(255,255,255)";
+        ctx.fillRect(0,0,canvas.getBoundingClientRect().width,canvas.getBoundingClientRect().height);
       }
-
+        function drawLine() {
+          ctx.beginPath();
+          ctx.moveTo(ox,oy);
+          ctx.lineTo(x,y);
+          ctx.stroke();
+        }
     </script>
-
-
-    <body onload="mam_draw_init()">
-        <ul id="messages"></ul>
-        <form id="message_form" action="#">
-          <input id="input_msg" autocomplete="off" /><button>Send</button>
-        </form>
-        <div style="border:solid 1px #000000;width:400px;" id="candiv">
-          <canvas id="can" width="400px" height="300px"></canvas>
-        </div>
 <input type="button" onClick="clearCan();" value="クリア" style="width:100;height:30;" data-inline="true" />
 <button onclick="SaveImage()">保存</button>
 <img src="" id="result" />
@@ -121,11 +187,5 @@ function SaveImage(){
     }
   });
 }
-
-
-
-
 </script>
-
-</body>
 </html>

@@ -18,7 +18,6 @@ app.get('/' , function(req, res){
   }else{
     res.sendFile(__dirname+'/p5Practice.html');
   }
-
 });
 
 io.on('connection',function(socket){

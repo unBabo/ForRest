@@ -1,0 +1,40 @@
+button, a {
+  display: inline-block;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 10px 0;
+  padding: 0px;
+  height: 50px;
+  border-width: 0;
+  font-family: sans-serif;
+  font-weight: normal;
+  font-size: inherit;
+  text-decoration: none;
+  line-height: 50px;
+  cursor: pointer;
+  font-size: 100%;
+}
+button {
+  #width:0px;
+  overflow: visible;
+}
+button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+.option-button {
+  width: 30%;
+  margin-left: 16px;
+  height: 60px;
+  font-size: 24px;
+  border-radius: 8px;
+  filter: drop-shadow(4px 4px 4px rgba(0,0,0,0.6));
+}
+
+.option-button:focus {
+  background-color: #222;
+  color: #ddd;
+  filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.4));
+}

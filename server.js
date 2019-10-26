@@ -28,6 +28,18 @@ app.get('/' , function(req, res){
   //   res.sendFile(__dirname+'/p5Practice.html');
   // }
 });
+app.get('/test' , function(req, res){
+  // var ua = parser(req.headers['user-agent']);     // HTTPヘッダよりUser agentを取得
+   res.sendFile(__dirname+'/public/Submit.html');
+   // res.writeHead(200, {"Content-Type": mime[path.extname(__dirname+'/public/index.html')] || "text/plain"});
+  // console.log(ua.device);
+  // if(ua.device.model!=undefined){
+  //   res.sendFile(__dirname+'/public/index.html');
+  // }else{
+  //   res.sendFile(__dirname+'/p5Practice.html');
+  // }
+});
+
 
 io.on('connection',function(socket){
     socket.on('message',function(msg){

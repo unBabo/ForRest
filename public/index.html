@@ -2,12 +2,13 @@
 <html lang="ja">
 <head>
   <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <!-- <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1"> -->
+    <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1">
     <link rel="stylesheet" type="text/css" href="./main.css">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
     <title>モヤ焚き火1</title>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
 </head>
@@ -33,19 +34,19 @@
          <input class="picker" type="text">
       </div>
 
-<!--
+
       <form id="canvasform" action="#">
         <input id="input_msg" autocomplete="off" /><button>canvassend</button>
       </form>
   <input type="button" onClick="clearCan();" value="クリア" style="width:100;height:30;" data-inline="true" />
   <button onclick="SaveImage()">保存</button>
-  <img src="" id="result" /> -->
+  <img src="" id="result" />
   <!-- <button onclick="location.href='../p5Practice.html'">change</button> -->
     </body>
 
     <!-- html2canvas部分 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
-  <script>
+  <script type="text/javascript">
 
   var imgData;
   function SaveImage(){
@@ -66,14 +67,14 @@
           socketio.on('message',function(msg){
             $('#messages').append($('<li>').text(msg));
           });
-          //canvas送信
-        //   $('#canvasform').submit(function(){
-        //     socketio.emit('canvassend',imgData);
-        //     return false;
-        //   })
-        //   socketio.on('canvassend',function(canvasdata){
-        //     $('#result').attr('src',canvasdata);
-        // });
+          // canvas送信
+          $('#canvasform').submit(function(){
+            socketio.emit('canvassend',imgData);
+            return false;
+          })
+          socketio.on('canvassend',function(canvasdata){
+            $('#result').attr('src',canvasdata);
+        });
       });
      </script>
 

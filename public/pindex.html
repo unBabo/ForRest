@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="./main.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <title>モヤ焚き火PC</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <img src="" id="result" />
+</body>
+  <script type="text/javascript">
+      var socketio = io();
+      $(function(){
+          socketio.on('canvassend',function(canvasdata){
+            $('#result').attr('src',canvasdata);
+        });
+      });
+     </script>
+</html>

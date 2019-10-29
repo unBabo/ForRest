@@ -8,21 +8,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.js"></script>
     <title>モヤ焚き火PC</title>
-    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
     <img src="" id="result" />
 </body>
 
-  <!-- <script type="text/javascript">
+  <script type="text/javascript">
       var socketio = io();
       $(function(){
           socketio.on('canvassend',function(canvasdata){
             $('#result').attr('src',canvasdata);
         });
       });
-     </script> -->
+     </script>
 
      <script>
 
@@ -47,6 +47,7 @@ function setup() {
 
 function draw() {
   background(60);
+
   translate(width / 2, height / 2+200);
   for (var radius = 250; radius > 0; radius -= 50) {//大きさの段階、半径
     //radiusが小さくなるほど中心を下に

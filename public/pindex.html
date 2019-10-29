@@ -2,24 +2,96 @@
 <html lang="ja">
 <head>
   <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1">
-    <link rel="stylesheet" type="text/css" href="./main.css">
+    <!-- <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1"> -->
+    <link rel="stylesheet" type="text/css" href="./pc.css">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.js"></script>
     <title>モヤ焚き火PC</title>
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
 </head>
 
 <body>
     <img src="" id="result" />
 </body>
-  <script type="text/javascript">
+
+  <!-- <script type="text/javascript">
       var socketio = io();
       $(function(){
           socketio.on('canvassend',function(canvasdata){
             $('#result').attr('src',canvasdata);
         });
       });
+     </script> -->
+
+     <script>
+
+
+var offset1;
+var offset2;
+
+var sc = 0.0007;
+var c1, c2;
+var ty=0;
+
+function setup() {
+  createCanvas(3000,2000);
+  noStroke();
+  //println(offset1);
+  c2=color(211, 44, 0);
+  c1=color(0, 135, 152);
+  //mousePressed();
+  offset1 = createVector(random(10000), random(10000));
+  offset2 = createVector(random(10000), random(10000));
+}
+
+function draw() {
+  background(60);
+  translate(width / 2, height / 2+200);
+  for (var radius = 250; radius > 0; radius -= 50) {//大きさの段階、半径
+    //radiusが小さくなるほど中心を下に
+    translate(0, ty);
+    ty+=13;
+
+    fill(map(radius, 0, 250, red(c1), red(c2)),
+      map(radius, 0, 250, green(c1), green(c2)),
+      map(radius, 0, 250, blue(c1), blue(c2)),200);
+    beginShape();
+    for (var angle = 0; angle < 360; angle += 0.5) {//角の数、スタート角度と終わりの角度、丸み
+      var radian = radians(angle);
+      var x = radius * cos(radian);
+      var y = radius * sin(radian);
+      var nx, ny;
+      var noiseSize=y*-0.00022/2;
+      sc+=noiseSize;
+      if (y<50) {
+        y*=2;
+        x*=0.9;
+      } else {
+        x*=1.3;
+      }
+      if (radius==250) {
+        if (y>50) {
+          nx = x + map(noise(x * scale + offset1.x, y * scale + offset1.y, frameCount * 0.02), 0, 1, -80, 84);
+          ny = y + map(noise(x * scale + offset2.x, y * scale + offset2.y, frameCount * 0.03), 0, 1, -100, 30);
+        } else {
+          nx = x + map(noise(x * scale + offset1.x, y * scale + offset1.y, frameCount * 0.02), 0, 1, -140, 124);
+          ny = y + map(noise(x * scale + offset2.x, y * scale + offset2.y, frameCount * 0.03), 0, 1, -220, 60);
+        }
+      } else if (radius==50) {
+        nx = x + map(noise(x * sc + offset1.x, y * sc + offset1.y, frameCount * 0.02), 0, 1, -100, 100);
+        ny = y-80 + map(noise(x * sc + offset2.x, y * sc + offset2.y, frameCount * 0.04), 0, 1, -200, 20);
+      } else {
+        nx = x + map(noise(x * sc + offset1.x, y * sc + offset1.y, frameCount * 0.02), 0, 1, -100, 100);
+        ny = y + map(noise(x * sc + offset2.x, y * sc + offset2.y, frameCount * 0.02), 0, 1, -200, 20);
+      }
+
+      vertex(nx, ny);
+      sc-=noiseSize;
+    }
+    endShape(CLOSE);
+  }
+  ty=0;
+}
      </script>
 </html>

@@ -183,7 +183,7 @@ push();
       map(radius, 0, 250, green(c1), green(c2)),
       map(radius, 0, 250, blue(c1), blue(c2)),200);
     beginShape();
-    for (var angle = 0; angle < 360; angle += 0.5) {//角の数、スタート角度と終わりの角度、丸み
+    for (var angle = 0; angle < 360; angle += 1) {//角の数、スタート角度と終わりの角度、丸み
       var radian = radians(angle);
       var x = radius * cos(radian);
       var y = radius * sin(radian);
@@ -300,7 +300,7 @@ push();
         map(radius, 0, 50, green(c3), green(c4)),
         map(radius, 0, 50, blue(c3), blue(c4)),200);
       beginShape();
-      for (var angle = 0; angle < 360; angle += 0.5) {//角の数、スタート角度と終わりの角度、丸み
+      for (var angle = 0; angle < 360; angle += 0.1) {//角の数、スタート角度と終わりの角度、丸み
         var radian = radians(angle);
         var x = radius * cos(radian)*radiusPlus[i];
         var y = radius * sin(radian)*radiusPlus[i];

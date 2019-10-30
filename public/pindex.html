@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <!-- <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1"> -->
+  <META http-equiv="Content-Type" content="text/html charset=UTF-8">
+    <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1">
     <link rel="stylesheet" type="text/css" href="./pc.css">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
@@ -12,14 +12,24 @@
 </head>
 
 <body>
-    <img src="" id="result" />
+    <!-- <img src="" id="result" /> -->
 </body>
 
   <script type="text/javascript">
       var socketio = io();
+      var canvasimage=null;
       $(function(){
           socketio.on('canvassend',function(canvasdata){
-            $('#result').attr('src',canvasdata);
+            //$('#result').attr('src',canvasdata);
+            canvasimage=canvasdata;
+            for(var i=0;i<20;i++){
+              if(i==imgnum){
+                  imgflag[i]=true;
+                  imgnum++;
+              }
+            }
+
+            //
         });
       });
      </script>
@@ -30,12 +40,32 @@
 var offset1;
 var offset2;
 
-var sc = 0.0007;
+var imgflag=new Array();
+var imgnum=0;
+let img=new p5.Image();
+
+let imgx=[];
+let imgy=[];
+
+let burn=new Array();
+let burningflag=new Array();
+let burningnum=-1;
+
+var sc = 0.04;
 var c1, c2;
-var ty=0;
+var ty=-13;
+
+
 
 function setup() {
-  createCanvas(3000,2000);
+  for(var i=0;i<20;i++){
+    burn[i]=new Burning();
+    burningflag[i]=false;
+    imgflag[i]=false;
+  }
+  img=[];
+  //imgarray=new Array();
+  createCanvas(windowWidth,windowHeight+500);
   noStroke();
   //println(offset1);
   c2=color(211, 44, 0);
@@ -45,14 +75,49 @@ function setup() {
   offset2 = createVector(random(10000), random(10000));
 }
 
+
+
+
+
+
 function draw() {
   background(60);
+  //burn.display(100,500);
 
-  translate(width / 2, height / 2+200);
-  for (var radius = 250; radius > 0; radius -= 50) {//大きさの段階、半径
+  for(var i=0;i<20;i++){
+    if(imgflag[i]){
+      //console.log("hi");
+      //imgarray[0]=loadImage(canvasimage);
+      img.push(loadImage(canvasimage));
+      imgx.push(0);
+      imgy.push(0);
+      //console.log(img[0]);
+      imgflag[i]=false;
+    }
+    if(img[i]!=null){
+      if(imgx[i]<100){
+        imgx[i]+=3;
+        imgy[i]+=3;
+      }else if(imgx[i]>100){
+        burningflag[i]=true;
+        burningnum=i;
+      }
+      image(img[i],imgx[i],imgy[i],225,300);
+
+      if(burningflag[i]){
+        burn[i].display(imgx[i]+220,imgy[i]+300);
+      }
+
+    }
+  }
+
+
+  translate(width / 2, height / 2);
+  for (var radius = 250; radius > 0; radius -= 75/2) {//大きさの段階、半径
     //radiusが小さくなるほど中心を下に
+    //radius=280;
     translate(0, ty);
-    ty+=13;
+    ty+=6;
 
     fill(map(radius, 0, 250, red(c1), red(c2)),
       map(radius, 0, 250, green(c1), green(c2)),
@@ -64,35 +129,174 @@ function draw() {
       var y = radius * sin(radian);
       var nx, ny;
       var noiseSize=y*-0.00022/2;
-      sc+=noiseSize;
+      scale+=noiseSize;
       if (y<50) {
         y*=2;
-        x*=0.9;
       } else {
         x*=1.3;
       }
+      if(x<0){
+      x-=y/16;
+    }else{
+      x+=y/10;
+    }
+
       if (radius==250) {
-        if (y>50) {
-          nx = x + map(noise(x * scale + offset1.x, y * scale + offset1.y, frameCount * 0.02), 0, 1, -80, 84);
-          ny = y + map(noise(x * scale + offset2.x, y * scale + offset2.y, frameCount * 0.03), 0, 1, -100, 30);
+        if (y>-100) {
+          nx = x + map(noise(x * sc + offset1.x, y * sc + offset1.y, frameCount * 0.02), 0, 1, -80, 84);
+          ny = y + map(noise(x * sc + offset2.x, y * sc + offset2.y, frameCount * 0.2), 0, 1, -10, 30);
         } else {
-          nx = x + map(noise(x * scale + offset1.x, y * scale + offset1.y, frameCount * 0.02), 0, 1, -140, 124);
-          ny = y + map(noise(x * scale + offset2.x, y * scale + offset2.y, frameCount * 0.03), 0, 1, -220, 60);
+          sc+=noiseSize;
+          nx = x + map(noise(x * sc + offset1.x, y * sc + offset1.y, frameCount * 0.02), 0, 1, -140, 124);
+          ny = y + map(noise(x * sc + offset2.x, y * sc + offset2.y, frameCount * 0.03), 0, 1, -200, 60);
+          sc-=noiseSize;
         }
-      } else if (radius==50) {
+      } else if (radius<50) {
         nx = x + map(noise(x * sc + offset1.x, y * sc + offset1.y, frameCount * 0.02), 0, 1, -100, 100);
-        ny = y-80 + map(noise(x * sc + offset2.x, y * sc + offset2.y, frameCount * 0.04), 0, 1, -200, 20);
+        ny = y-80 + map(noise(x * sc + offset2.x, y * sc + offset2.y, frameCount * 0.04), 0, 1, -100, 20);
       } else {
-        nx = x + map(noise(x * sc + offset1.x, y * sc + offset1.y, frameCount * 0.02), 0, 1, -100, 100);
-        ny = y + map(noise(x * sc + offset2.x, y * sc + offset2.y, frameCount * 0.02), 0, 1, -200, 20);
+        nx = x + map(noise(x * sc + offset1.x, y * sc + offset1.y, frameCount * 0.02), 0, 1, -70, 70);
+        ny = y + map(noise(x * sc + offset2.x, y * sc + offset2.y, frameCount * 0.02), 0, 1, -150, 20);
       }
 
       vertex(nx, ny);
-      sc-=noiseSize;
+      scale-=noiseSize;
+
     }
     endShape(CLOSE);
   }
   ty=0;
 }
+
+
+
+
+
+
+
+
+      var count=0;
+      var radiusPlus=1;
+class Burning{
+
+  display(a,b){
+    var offset3;
+    var offset4;
+
+    var sc2 = 0.02;
+    var c3, c4;
+    var ty2=0;
+
+    if(burningflag){
+      count++;
+    }
+    if(count>100){
+      radiusPlus=1.7;
+      a-=70;
+      b-=70;
+    }
+    if(count>200){
+      radiusPlus=2.5;
+      a-=20;
+      b-=20;
+    }
+    if(count>240){
+      radiusPlus=0;
+      burningflag[imgnum]=false;
+      count=0;
+    }
+
+
+    c4=color(211, 44, 0);
+    c3=color(0, 135, 152);
+    //mousePressed();
+    offset3 = createVector(random(10000), random(10000));
+    offset4 = createVector(random(10000), random(10000));
+
+push();
+    translate(a,b);
+
+    for (var radius = 50; radius > 0; radius -= 10) {//大きさの段階、半径
+
+      //radiusが小さくなるほど中心を下に
+      //radius=280;
+      translate(0, ty);
+      ty+=2;
+
+      fill(map(radius, 0, 50, red(c3), red(c4)),
+        map(radius, 0, 50, green(c3), green(c4)),
+        map(radius, 0, 50, blue(c3), blue(c4)),200);
+      beginShape();
+      for (var angle = 0; angle < 360; angle += 0.5) {//角の数、スタート角度と終わりの角度、丸み
+        var radian = radians(angle);
+        var x = radius * cos(radian)*radiusPlus;
+        var y = radius * sin(radian)*radiusPlus;
+        var nx, ny;
+        //var noiseSize=y*-0.00022/2;
+        //sc+=noiseSize;
+        if (y<0) {
+          y*=2;
+        }
+        //else {
+      //     x*=1.3;
+      //   }
+      //   if(x<0){
+      //   x-=y/16;
+      // }else{
+      //   x+=y/10;
+      // }
+          // if (radius<50) {
+          // nx = x + map(noise(x * sc + offset3.x, y * sc + offset3.y, frameCount * 0.01), 0, 1, -10, 10);
+          // ny = y-80 + map(noise(x * sc + offset4.x, y * sc + offset4.y, frameCount * 0.01), 0, 1, -10, 20);
+
+          nx = x + map(noise(x * sc2 + offset3.x, y * sc2 + offset3.y, frameCount * 0.01), 0, 1, -30, 30);
+          ny = y + map(noise(x * sc2 + offset4.x, y * sc2 + offset4.y, frameCount * 0.001), 0, 1, -60, 20);
+
+
+
+        vertex(nx, ny);
+        //sc-=noiseSize;
+
+      }
+      endShape(CLOSE);
+    }
+    ty=0;
+    pop();
+  }
+}
+
+
+
+
+// const canvas = doccument.getElementsByClassName("p5Canvas");
+// if(canvas!=null){
+//   console.log("ok");
+//   const ctx = canvas.getContext("2d");
+// drawImage(canvas,canvasdata);
+// }else{
+//   console.log("no");
+// }
+// function drawImage(canvas,imagePath){
+//     //console.log("draw");
+//     const image = new Image();
+//     image.addEventListener("load",function (){
+//       var originalW=image.naturalWidth;
+//       var originalH=image.naturalHeight;
+//       var windowW=400;
+//       //console.log(originalW);
+//       var imageHeight = originalH*(windowW/originalW);
+//         // console.log(originalW);
+//          // canvas.width=;
+//          // canvas.height=image.height;
+//           canvas.width=windowW;
+//          canvas.height=imageHeight;
+//
+//
+//         ctx.drawImage(image, 0, 0,900,1200,0,0,windowW,imageHeight);
+//       //  console.log("load!");
+//     });
+//     image.src = imagePath;
+// }
+
      </script>
 </html>

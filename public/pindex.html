@@ -91,42 +91,88 @@ function setup() {
 
 
 
-
 function draw() {
   background(60);
   //burn.display(100,500);
 
   for(var i=0;i<20;i++){
+    //imglagが入ってたらロードして初期配置
     if(imgflag[i]){
       //console.log("hi");
       //imgarray[0]=loadImage(canvasimage);
       img[i]=loadImage(canvasimage);
-      imgx[i]=0;
-      imgy[i]=0;
+      // DrawImage(img[i],i);
+      if(i%6==0){
+        imgx[i]=0;
+        imgy[i]=0;
+      }else if(i%6==1){
+        imgx[i]=0;
+        imgy[i]=500;
+      }else if(i%6==2){
+        imgx[i]=0;
+        imgy[i]=1000;
+      }else if(i%6==3){
+        imgx[i]=windowWidth-300;
+        imgy[i]=0;
+      }else if(i%6==4){
+        imgx[i]=windowWidth-300;
+        imgy[i]=500;
+      }else if(i%6==5){
+        imgx[i]=windowWidth-300;
+        imgy[i]=1000;
+      }
+
       //console.log(img[0]);
       imgflag[i]=false;
       return false;
     }
+    //場所によって移動方向変える
+    //左側
     if(usingflag[i]){
-      if(imgx[i]<100){
+    if(imgx[i]<400){
+      if(i%6==0){
         imgx[i]+=3;
-        imgy[i]+=3;
-      }else if(imgx[i]>=100){
-        burningflag[i]=true;
-        //burningnum=i;
+        imgy[i]+=4;
+      }else if(i%6==1){
+        imgx[i]+=3;
+        // imgy[i]=500;
+      }else if(i%6==2){
+        imgx[i]+=3;
+        imgy[i]-=4;
       }
+    }else if(imgx[i]>390&&imgx[i]<400){
+
+      burningflag[i]=true;
+    }
+
+    //右側
+    if(imgx[i]>windowWidth/2+200){
+      if(i%6==3){
+         imgx[i]-=3;
+         imgy[i]+=4;
+       }else if(i%6==4){
+         imgx[i]-=3;
+         // imgy[i]=500;
+       }else if(i%6==5){
+         imgx[i]-=3;
+         imgy[i]-=4;
+       }
+    }else{
+       burningflag[i]=true;
+    }
+
       image(img[i],imgx[i],imgy[i],225,300);
 
       if(burningflag[i]){
         //console.log(burningflag[3]);
         burn[i].display(imgx[i]+220,imgy[i]+300);
+        burningflag[i]=false;
       }
-
     }
-  }
+}
 
-
-  translate(width / 2, height / 2);
+push();
+  translate(windowWidth / 2, windowHeight / 2+200);
   for (var radius = 250; radius > 0; radius -= 75/2) {//大きさの段階、半径
     //radiusが小さくなるほど中心を下に
     //radius=280;
@@ -180,13 +226,21 @@ function draw() {
     endShape(CLOSE);
   }
   ty=0;
+  pop();
 }
 
 
 
-function DrawImage(){
 
-}
+
+// function DrawImage(img,i){
+//   if(i%6==0){
+//
+//
+//   }
+//
+//   image(img[i],imgx[i],imgy[i],225,300);
+// }
 
 
 
@@ -204,7 +258,7 @@ class Burning{
     var ty2=0;
 
     for(var i=0;i<20;i++){
-      if(usingflag[i]){
+      if(burningflag[i]){
     if(burningflag[i]){
       count[i]++;
     }

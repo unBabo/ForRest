@@ -20,7 +20,7 @@ var parser = require('ua-parser-js');
 app.get('/' , function(req, res){
   // var ua = parser(req.headers['user-agent']);     // HTTPヘッダよりUser agentを取得
    res.sendFile(__dirname+'/public/index.html');
-   res.writeHead(200, {"Content-Type": mime[path.extname(__dirname+'/public/index.html')] || "text/plain"});
+   // res.writeHead(200, {"Content-Type": mime[path.extname(__dirname+'/public/index.html')] || "text/plain"});
   // console.log(ua.device);
   // if(ua.device.model!=undefined){
   //   res.sendFile(__dirname+'/public/index.html');
@@ -31,7 +31,7 @@ app.get('/' , function(req, res){
 app.get('/pc' , function(req, res){
   // var ua = parser(req.headers['user-agent']);     // HTTPヘッダよりUser agentを取得
    res.sendFile(__dirname+'/public/pindex.html');
- res.writeHead(200, {"Content-Type": mime[path.extname(__dirname+'/public/pindex.html')] || "text/plain"});
+ // res.writeHead(200, {"Content-Type": mime[path.extname(__dirname+'/public/pindex.html')] || "text/plain"});
   // console.log(ua.device);
   // if(ua.device.model!=undefined){
   //   res.sendFile(__dirname+'/public/index.html');

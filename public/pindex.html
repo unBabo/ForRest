@@ -24,10 +24,15 @@
             canvasimage=canvasdata;
             for(var i=0;i<20;i++){
               if(i==imgnum){
-                  imgflag[i]=true;
-                  imgnum++;
+                if(usingflag[i]==false){
+                    imgflag[i]=true;
+                    usingflag[i]=true;
+
+                    // return false;
+                }
               }
             }
+            imgnum++;
 
             //
         });
@@ -47,6 +52,8 @@ let img=new p5.Image();
 let imgx=[];
 let imgy=[];
 
+let usingflag=new Array();
+
 let burn=new Array();
 let burningflag=new Array();
 let burningnum=-1;
@@ -55,13 +62,18 @@ var sc = 0.04;
 var c1, c2;
 var ty=-13;
 
+var count=new Array();
+var radiusPlus=new Array();
 
 
 function setup() {
   for(var i=0;i<20;i++){
     burn[i]=new Burning();
     burningflag[i]=false;
+    usingflag[i]=false;
     imgflag[i]=false;
+    count[i]=0;
+    radiusPlus[i]=1;
   }
   img=[];
   //imgarray=new Array();
@@ -88,23 +100,25 @@ function draw() {
     if(imgflag[i]){
       //console.log("hi");
       //imgarray[0]=loadImage(canvasimage);
-      img.push(loadImage(canvasimage));
-      imgx.push(0);
-      imgy.push(0);
+      img[i]=loadImage(canvasimage);
+      imgx[i]=0;
+      imgy[i]=0;
       //console.log(img[0]);
       imgflag[i]=false;
+      return false;
     }
-    if(img[i]!=null){
+    if(usingflag[i]){
       if(imgx[i]<100){
         imgx[i]+=3;
         imgy[i]+=3;
-      }else if(imgx[i]>100){
+      }else if(imgx[i]>=100){
         burningflag[i]=true;
-        burningnum=i;
+        //burningnum=i;
       }
       image(img[i],imgx[i],imgy[i],225,300);
 
       if(burningflag[i]){
+        //console.log(burningflag[3]);
         burn[i].display(imgx[i]+220,imgy[i]+300);
       }
 
@@ -170,16 +184,18 @@ function draw() {
 
 
 
+function DrawImage(){
+
+}
 
 
 
 
 
-      var count=0;
-      var radiusPlus=1;
 class Burning{
 
   display(a,b){
+
     var offset3;
     var offset4;
 
@@ -187,23 +203,26 @@ class Burning{
     var c3, c4;
     var ty2=0;
 
-    if(burningflag){
-      count++;
+    for(var i=0;i<20;i++){
+      if(usingflag[i]){
+    if(burningflag[i]){
+      count[i]++;
     }
-    if(count>100){
-      radiusPlus=1.7;
+    if(count[i]>50){
+      radiusPlus[i]=1.7;
       a-=70;
       b-=70;
     }
-    if(count>200){
-      radiusPlus=2.5;
+    if(count[i]>100){
+      radiusPlus[i]=2.5;
       a-=20;
       b-=20;
     }
-    if(count>240){
-      radiusPlus=0;
-      burningflag[imgnum]=false;
-      count=0;
+    if(count[i]>140){
+      radiusPlus[i]=0;
+      burningflag[i]=false;
+      usingflag[i]=false;
+      count[i]=0;
     }
 
 
@@ -229,8 +248,8 @@ push();
       beginShape();
       for (var angle = 0; angle < 360; angle += 0.5) {//角の数、スタート角度と終わりの角度、丸み
         var radian = radians(angle);
-        var x = radius * cos(radian)*radiusPlus;
-        var y = radius * sin(radian)*radiusPlus;
+        var x = radius * cos(radian)*radiusPlus[i];
+        var y = radius * sin(radian)*radiusPlus[i];
         var nx, ny;
         //var noiseSize=y*-0.00022/2;
         //sc+=noiseSize;
@@ -264,8 +283,8 @@ push();
     pop();
   }
 }
-
-
+}
+}
 
 
 // const canvas = doccument.getElementsByClassName("p5Canvas");

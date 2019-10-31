@@ -144,9 +144,6 @@
               var windowW=window.parent.screen.width;
               console.log(originalW);
               var imageHeight = originalH*(windowW/originalW);
-                // console.log(originalW);
-                 // canvas.width=;
-                 // canvas.height=image.height;
                   canvas.width=windowW;
                  canvas.height=imageHeight;
 
@@ -199,6 +196,7 @@
       function clearCan(){
         ctx.fillStyle="rgb(255,255,255)";
         ctx.fillRect(0,0,canvas.getBoundingClientRect().width,canvas.getBoundingClientRect().height);
+        drawImage(canvas,imagePath);
       }
         function drawLine() {
           ctx.beginPath();

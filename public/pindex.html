@@ -51,6 +51,7 @@ let img=new p5.Image();
 
 let imgx=[];
 let imgy=[];
+let imgLR=new Array();
 
 let usingflag=new Array();
 
@@ -74,6 +75,7 @@ function setup() {
     imgflag[i]=false;
     count[i]=0;
     radiusPlus[i]=1;
+    imgLR[i]=-1;
   }
   img=[];
   //imgarray=new Array();
@@ -93,71 +95,71 @@ function setup() {
 
 function draw() {
   background(60);
-  //burn.display(100,500);
 
   for(var i=0;i<20;i++){
     //imglagが入ってたらロードして初期配置
     if(imgflag[i]){
-      //console.log("hi");
-      //imgarray[0]=loadImage(canvasimage);
       img[i]=loadImage(canvasimage);
       // DrawImage(img[i],i);
       if(i%6==0){
         imgx[i]=0;
         imgy[i]=0;
+        imgLR[i]=0;
       }else if(i%6==1){
-        imgx[i]=0;
-        imgy[i]=500;
+        imgx[i]=windowWidth-225;
+        imgy[i]=0;
+        imgLR[i]=1;
       }else if(i%6==2){
         imgx[i]=0;
-        imgy[i]=1000;
+        imgy[i]=300;
+        imgLR[i]=0;
       }else if(i%6==3){
-        imgx[i]=windowWidth-300;
-        imgy[i]=0;
+        imgx[i]=windowWidth-225;
+        imgy[i]=300;
+        imgLR[i]=1;
       }else if(i%6==4){
-        imgx[i]=windowWidth-300;
-        imgy[i]=500;
+        imgx[i]=0;
+        imgy[i]=800;
+        imgLR[i]=0;
       }else if(i%6==5){
-        imgx[i]=windowWidth-300;
-        imgy[i]=1000;
+        imgx[i]=windowWidth-225;
+        imgy[i]=800;
+        imgLR[i]=1;
       }
-
-      //console.log(img[0]);
       imgflag[i]=false;
       return false;
     }
     //場所によって移動方向変える
-    //左側
     if(usingflag[i]){
-    if(imgx[i]<400){
+      //左側
+    if(imgLR[i]==0&&imgx[i]<windowWidth/2-400){
       if(i%6==0){
-        imgx[i]+=3;
-        imgy[i]+=4;
-      }else if(i%6==1){
-        imgx[i]+=3;
-        // imgy[i]=500;
+        imgx[i]+=6;
+        imgy[i]+=2;
       }else if(i%6==2){
-        imgx[i]+=3;
-        imgy[i]-=4;
+        imgx[i]+=6;
+        imgy[i]+=1.2;
+      }else if(i%6==4){
+        imgx[i]+=6;
+        imgy[i]-=0.8;
       }
-    }else if(imgx[i]>390&&imgx[i]<400){
-
+    }else if(imgLR[i]==0&&imgx[i]>=windowWidth/2-400){
       burningflag[i]=true;
     }
 
     //右側
-    if(imgx[i]>windowWidth/2+200){
-      if(i%6==3){
-         imgx[i]-=3;
-         imgy[i]+=4;
-       }else if(i%6==4){
-         imgx[i]-=3;
-         // imgy[i]=500;
+    if(imgLR[i]==1&&imgx[i]>windowWidth/2+160){
+      if(i%6==1){
+         imgx[i]-=6;
+         imgy[i]+=2;
+       }else if(i%6==3){
+         imgx[i]-=6;
+       imgy[i]+=1.2;
        }else if(i%6==5){
-         imgx[i]-=3;
-         imgy[i]-=4;
+         imgx[i]-=6;
+         imgy[i]-=0.8;
        }
-    }else{
+    }else if(imgLR[i]==1&&imgx[i]<=windowWidth/2+160){
        burningflag[i]=true;
     }
 
@@ -165,7 +167,12 @@ function draw() {
 
       if(burningflag[i]){
         //console.log(burningflag[3]);
+        if(imgLR[i]==0){
         burn[i].display(imgx[i]+220,imgy[i]+300);
+      }else{
+        burn[i].display(imgx[i],imgy[i]+300);
+      }
+
         burningflag[i]=false;
       }
     }
@@ -173,9 +180,12 @@ function draw() {
 
 push();
   translate(windowWidth / 2, windowHeight / 2+200);
-  for (var radius = 250; radius > 0; radius -= 75/2) {//大きさの段階、半径
+  for (var radius = 200; radius > 0; radius -= 75/2) {//大きさの段階、半径
     //radiusが小さくなるほど中心を下に
     //radius=280;
+    if(radius==200){
+      radius=240;
+    }
     translate(0, ty);
     ty+=6;
 
@@ -202,6 +212,9 @@ push();
     }
 
       if (radius==250) {
+        fill(map(radius, 0, 250, red(c1), red(c2)),
+          map(radius, 0, 250, green(c1), green(c2)),
+          map(radius, 0, 250, blue(c1), blue(c2)),160);
         if (y>-100) {
           nx = x + map(noise(x * sc + offset1.x, y * sc + offset1.y, frameCount * 0.02), 0, 1, -80, 84);
           ny = y + map(noise(x * sc + offset2.x, y * sc + offset2.y, frameCount * 0.2), 0, 1, -10, 30);
@@ -233,18 +246,6 @@ push();
 
 
 
-// function DrawImage(img,i){
-//   if(i%6==0){
-//
-//
-//   }
-//
-//   image(img[i],imgx[i],imgy[i],225,300);
-// }
-
-
-
-
 
 class Burning{
 
@@ -258,20 +259,33 @@ class Burning{
     var ty2=0;
 
     for(var i=0;i<20;i++){
-      if(burningflag[i]){
+
     if(burningflag[i]){
       count[i]++;
-    }
-    if(count[i]>50){
-      radiusPlus[i]=1.7;
-      a-=70;
-      b-=70;
-    }
-    if(count[i]>100){
-      radiusPlus[i]=2.5;
-      a-=20;
-      b-=20;
-    }
+
+      if(imgLR[i]==0){//左
+        if(count[i]>50){
+          radiusPlus[i]=1.7;
+          a-=70;
+          b-=70;
+        }
+        if(count[i]>100){
+          radiusPlus[i]=2.5;
+          a-=20;
+          b-=20;
+        }
+      }else{//右
+        if(count[i]>50){
+          radiusPlus[i]=1.7;
+          a+=70;
+          b-=70;
+        }
+        if(count[i]>100){
+          radiusPlus[i]=2.5;
+          a+=20;
+          b-=20;
+        }
+      }
     if(count[i]>140){
       radiusPlus[i]=0;
       burningflag[i]=false;
@@ -300,7 +314,7 @@ push();
         map(radius, 0, 50, green(c3), green(c4)),
         map(radius, 0, 50, blue(c3), blue(c4)),200);
       beginShape();
-      for (var angle = 0; angle < 360; angle += 0.1) {//角の数、スタート角度と終わりの角度、丸み
+      for (var angle = 0; angle < 360; angle += 0.5) {//角の数、スタート角度と終わりの角度、丸み
         var radian = radians(angle);
         var x = radius * cos(radian)*radiusPlus[i];
         var y = radius * sin(radian)*radiusPlus[i];
@@ -310,17 +324,6 @@ push();
         if (y<0) {
           y*=2;
         }
-        //else {
-      //     x*=1.3;
-      //   }
-      //   if(x<0){
-      //   x-=y/16;
-      // }else{
-      //   x+=y/10;
-      // }
-          // if (radius<50) {
-          // nx = x + map(noise(x * sc + offset3.x, y * sc + offset3.y, frameCount * 0.01), 0, 1, -10, 10);
-          // ny = y-80 + map(noise(x * sc + offset4.x, y * sc + offset4.y, frameCount * 0.01), 0, 1, -10, 20);
 
           nx = x + map(noise(x * sc2 + offset3.x, y * sc2 + offset3.y, frameCount * 0.01), 0, 1, -30, 30);
           ny = y + map(noise(x * sc2 + offset4.x, y * sc2 + offset4.y, frameCount * 0.001), 0, 1, -60, 20);
@@ -337,39 +340,7 @@ push();
     pop();
   }
 }
-}
-}
-
-
-// const canvas = doccument.getElementsByClassName("p5Canvas");
-// if(canvas!=null){
-//   console.log("ok");
-//   const ctx = canvas.getContext("2d");
-// drawImage(canvas,canvasdata);
-// }else{
-//   console.log("no");
-// }
-// function drawImage(canvas,imagePath){
-//     //console.log("draw");
-//     const image = new Image();
-//     image.addEventListener("load",function (){
-//       var originalW=image.naturalWidth;
-//       var originalH=image.naturalHeight;
-//       var windowW=400;
-//       //console.log(originalW);
-//       var imageHeight = originalH*(windowW/originalW);
-//         // console.log(originalW);
-//          // canvas.width=;
-//          // canvas.height=image.height;
-//           canvas.width=windowW;
-//          canvas.height=imageHeight;
-//
-//
-//         ctx.drawImage(image, 0, 0,900,1200,0,0,windowW,imageHeight);
-//       //  console.log("load!");
-//     });
-//     image.src = imagePath;
-// }
+}}
 
      </script>
 </html>

@@ -84,17 +84,24 @@ function setup() {
   //println(offset1);
   c2=color(211, 44, 0);
   c1=color(0, 135, 152);
+  //c1=color();
+  //c1=color(51,100,100);
+  //c2=color(3,100,100);
   //mousePressed();
   offset1 = createVector(random(10000), random(10000));
   offset2 = createVector(random(10000), random(10000));
+  testimage=loadImage("./img/image0.png");
+//  colorMode(HSB,100);
 }
 
-
+var testimage;
 
 
 
 function draw() {
   background(60);
+
+  image(testimage,windowWidth/2-530,80);
 
   for(var i=0;i<20;i++){
     //imglagが入ってたらロードして初期配置
@@ -172,7 +179,6 @@ function draw() {
       }else{
         burn[i].display(imgx[i],imgy[i]+300);
       }
-
         burningflag[i]=false;
       }
     }
@@ -184,7 +190,7 @@ push();
     //radiusが小さくなるほど中心を下に
     //radius=280;
     if(radius==200){
-      radius=240;
+       radius=240;
     }
     translate(0, ty);
     ty+=6;
@@ -327,8 +333,6 @@ push();
 
           nx = x + map(noise(x * sc2 + offset3.x, y * sc2 + offset3.y, frameCount * 0.01), 0, 1, -30, 30);
           ny = y + map(noise(x * sc2 + offset4.x, y * sc2 + offset4.y, frameCount * 0.001), 0, 1, -60, 20);
-
-
 
         vertex(nx, ny);
         //sc-=noiseSize;

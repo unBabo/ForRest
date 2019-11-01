@@ -4,13 +4,14 @@
   <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1">
     <link rel="stylesheet" type="text/css" href="./main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/image-picker/0.3.1/image-picker.min.css" />
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/image-picker/0.3.1/image-picker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
     <title>モヤ焚き火1</title>
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
 </head>
 
 <body>
@@ -30,12 +31,32 @@
          <input class="picker" type="text">
       </div>
 
+      <!-- 画像表示 -->
+      <div class="content">
+         <button class="js-modal-open" href="">紙選択</button>
+     </div>
+     <div class="modal js-modal">
+         <div class="modal__bg js-modal-close"></div>
+         <div class="modal__content">
+           <select class="image-picker show-html imgpick">
+               <option data-img-src="./img/calendar02.jpg" data-img-class="first" data-img-alt="Page 1" value="1">  Page 1  </option>
+               <option data-img-src="./img/certificate.jpg" data-img-alt="Page 2" value="2">  Page 2  </option>
+               <option data-img-src="./img/composition.jpg" data-img-alt="Page 3" value="3">  Page 3  </option>
+               <option data-img-src="./img/resume.jpg" data-img-alt="Page 4" value="4">  Page 4  </option>
+               <option data-img-src="./img/ticket.jpg" data-img-alt="Page 5" value="5">  Page 5  </option>
+               <option data-img-src="./img/marriage.jpg" data-img-alt="Page 6" data-img-class="last" value="6"> Page 6 </option>
+             </select>
 
+             <!-- <p>ここにモーダルウィンドウで表示したいコンテンツを入れます。モーダルウィンドウを閉じる場合は下の「閉じる」をクリックするか、背景の黒い部分をクリックしても閉じることができます。</p> -->
+             <a class="js-modal-close" onclick="checkimg();clearCan();" href="">閉じる</a>
+         </div><!--modal__inner-->
+     </div><!--modal-->
+
+     <input type="button" onClick="clearCan();" value="クリア" style="width:100;height:30;" data-inline="true" />
+     <button onclick="SaveImage()">保存</button>
       <form id="canvasform" action="#">
       <button class="option-button">canvassend</button>
       </form>
-  <input type="button" onClick="clearCan();" value="クリア" style="width:100;height:30;" data-inline="true" />
-  <button onclick="SaveImage()">保存</button>
   <!-- <img src="" id="result" /> -->
   <!-- <button onclick="location.href='../p5Practice.html'">change</button> -->
     </body>
@@ -78,7 +99,8 @@
      <script>
       var ox=0,oy=0,x=0,y=0;
       var mf=false;
-      const imagePath = "../forrestimage5.jpg";
+
+
       const canvas = document.getElementById("can");
       const ctx = canvas.getContext("2d");
       const button_thin = document.getElementById("button-width-thin")
@@ -95,6 +117,33 @@
           }
         });
       });
+
+//画像表示
+$(function(){
+    $('.js-modal-open').on('click',function(){
+        $('.js-modal').fadeIn();
+        return false;
+    });
+    $('.js-modal-close').on('click',function(){
+        $('.js-modal').fadeOut();
+        return false;
+    });
+});
+$("select").imagepicker()
+      let imagetag=document.getElementsByClassName("selected")[0];
+     let testtag=imagetag.getElementsByTagName("img")[0];
+
+      let imagePath = testtag.getAttribute("src");
+      console.log(testtag);
+function checkimg(){
+  imagetag=document.getElementsByClassName("selected")[0];
+  testtag=imagetag.getElementsByTagName("img")[0];
+
+  imagePath = testtag.getAttribute("src");
+  console.log(imagePath);
+
+}
+
 
       ctx.lineJoin="round";
       ctx.lineCap="round";

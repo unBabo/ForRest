@@ -33,6 +33,10 @@
               }
             }
             imgnum++;
+            if(imgnum>=20){
+              imgnum=1;
+
+            }
 
             //
         });
@@ -101,7 +105,7 @@ var testimage;
 function draw() {
   background(60);
 
-  image(testimage,windowWidth/2-530,80);
+  image(testimage,windowWidth/2-580,80);
 
   for(var i=0;i<20;i++){
     //imglagが入ってたらロードして初期配置
@@ -148,7 +152,7 @@ function draw() {
         imgy[i]+=1.2;
       }else if(i%6==4){
         imgx[i]+=6;
-        imgy[i]-=0.8;
+        imgy[i]-=1.8;
       }
     }else if(imgLR[i]==0&&imgx[i]>=windowWidth/2-400){
       burningflag[i]=true;
@@ -164,7 +168,7 @@ function draw() {
        imgy[i]+=1.2;
        }else if(i%6==5){
          imgx[i]-=6;
-         imgy[i]-=0.8;
+         imgy[i]-=1.8;
        }
     }else if(imgLR[i]==1&&imgx[i]<=windowWidth/2+160){
        burningflag[i]=true;
@@ -267,7 +271,7 @@ class Burning{
     for(var i=0;i<20;i++){
 
     if(burningflag[i]){
-      count[i]++;
+      count[i]+=0.5;
 
       if(imgLR[i]==0){//左
         if(count[i]>50){

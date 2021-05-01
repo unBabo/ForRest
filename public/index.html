@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="./main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/image-picker/0.3.1/image-picker.min.css" />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/image-picker/0.3.1/image-picker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
+    <title>モヤ焚き火1</title>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+      <canvas id="can"></canvas>
+      <div class="boldrange">
+        <h3>線の太さ</h3>
+        <button class="option-button" id="button-width-thin">細</button>
+        <button class="option-button" id="button-width-medium">太</button>
+        <!-- <button class="option-button" id="button-width-bold">太</button> -->
+      </div>
+      <div class="colorrange">
+        <h3>線の色</h3>
+        <button class="option-button" id="button-color-black">black</button>
+        <!-- <button class="option-button" id="button-color-white">color-white</button> -->
+        <!-- <button class="option-button" id="button-color-red">red</button> -->
+         <input class="picker" type="text">
+      </div>
+
+      <!-- 画像表示 -->
+      <div class="content">
+         <button class="js-modal-open option-button alpha" href="">紙選ぶ</button>
+     </div>
+     <div class="modal js-modal">
+         <div class="modal__bg js-modal-close"></div>
+         <div class="modal__content">
+           <select class="image-picker show-html imgpick">
+               <option data-img-src="./img/calendar02.jpg" data-img-class="first" data-img-alt="Page 1" value="1">  Page 1  </option>
+               <option data-img-src="./img/certificate.jpg" data-img-alt="Page 2" value="2">  Page 2  </option>
+               <option data-img-src="./img/composition.jpg" data-img-alt="Page 3" value="3">  Page 3  </option>
+               <option data-img-src="./img/resume.jpg" data-img-alt="Page 4" value="4">  Page 4  </option>
+               <option data-img-src="./img/ticket.jpg" data-img-alt="Page 5" value="5">  Page 5  </option>
+               <option data-img-src="./img/marriage.jpg" data-img-alt="Page 6" data-img-class="last" value="6"> Page 6 </option>
+             </select>
+
+             <!-- <p>ここにモーダルウィンドウで表示したいコンテンツを入れます。モーダルウィンドウを閉じる場合は下の「閉じる」をクリックするか、背景の黒い部分をクリックしても閉じることができます。</p> -->
+             <a class="js-modal-close" onclick="checkimg();clearCan();" href="">決定</a>
+         </div><!--modal__inner-->
+     </div><!--modal-->
+<input type="button" onClick="clearCan();" value="描きなおす" style="width:100;height:30;" data-inline="true" class="option-button" />
+<!-- 送信画面 -->
+     <div class="content2">
+        <!-- <button class="js-send-open" href=""></button> -->
+        <button onclick="SaveImage()" class="js-send-open option-button2">送信</button>
+    </div>
+    <div class="send js-send">
+        <div class="send__bg js-send-close"></div>
+        <div class="send__content">
+
+            <!-- <p>ここにモーダルウィンドウで表示したいコンテンツを入れます。モーダルウィンドウを閉じる場合は下の「閉じる」をクリックするか、背景の黒い部分をクリックしても閉じることができます。</p> -->
+            <form id="canvasform" action="#">
+              <p>
+                モヤモヤを燃やしますか？
+              </p>
+            <button class="option-button">燃やす</button>
+            </form>
+
+            <!-- <a class="js-send-close" onclick="checkimg();clearCan();" href="">送信する</a> -->
+        </div><!--modal__inner-->
+    </div><!--modal-->
+
+
+
+      <form id="canvasform" action="#">
+      <!-- <button class="option-button">canvassend</button> -->
+      </form>
+  <!-- <img src="" id="result" /> -->
+  <!-- <button onclick="location.href='../p5Practice.html'">change</button> -->
+    </body>
+
+    <!-- html2canvas部分 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+  <script type="text/javascript">
+
+  var imgData;
+  function SaveImage(){
+    html2canvas(document.getElementById("can"),{
+      onrendered: function(canvas){
+        imgData = canvas.toDataURL();
+        // document.getElementById("result").src = imgData;
+      }
+    });
+  }
+      var socketio = io();
+      $(function(){
+          $('#message_form').submit(function(){
+            socketio.emit('message', $('#input_msg').val());
+            $('#input_msg').val('');
+            return false;
+          });
+          socketio.on('message',function(msg){
+            $('#messages').append($('<li>').text(msg));
+          });
+          // canvas送信
+          $('#canvasform').submit(function(){
+            socketio.emit('canvassend',imgData);
+            $('.js-send').fadeOut();
+            return false;
+          })
+          socketio.on('canvassend',function(canvasdata){
+            $('#result').attr('src',canvasdata);
+        });
+      });
+     </script>
+
+
+     <script>
+      var ox=0,oy=0,x=0,y=0;
+      var mf=false;
+
+
+      const canvas = document.getElementById("can");
+      const ctx = canvas.getContext("2d");
+      const button_thin = document.getElementById("button-width-thin")
+      const button_medidum = document.getElementById("button-width-medium")
+      // const button_bold = document.getElementById("button-width-bold")
+      const button_black = document.getElementById("button-color-black")
+      // const button_white = document.getElementById("button-color-white")
+      // const button_red = document.getElementById("button-color-red")
+
+      jQuery(function($){
+        $(".picker").spectrum({
+          move:function(color) {
+            ctx.strokeStyle=color.toHexString()
+          }
+        });
+      });
+
+//画像表示
+$(function(){
+    $('.js-modal-open').on('click',function(){
+        $('.js-modal').fadeIn();
+        return false;
+    });
+    $('.js-modal-close').on('click',function(){
+        $('.js-modal').fadeOut();
+        return false;
+    });
+});
+$(function(){
+    $('.js-send-open').on('click',function(){
+        $('.js-send').fadeIn();
+        return false;
+    });
+    $('.js-send-close').on('click',function(){
+        $('.js-send').fadeOut();
+        return false;
+    });
+});
+$("select").imagepicker()
+      let imagetag=document.getElementsByClassName("selected")[0];
+     let testtag=imagetag.getElementsByTagName("img")[0];
+
+      let imagePath = testtag.getAttribute("src");
+      console.log(testtag);
+function checkimg(){
+  imagetag=document.getElementsByClassName("selected")[0];
+  testtag=imagetag.getElementsByTagName("img")[0];
+
+  imagePath = testtag.getAttribute("src");
+  console.log(imagePath);
+
+}
+
+
+      ctx.lineJoin="round";
+      ctx.lineCap="round";
+        button_thin.onclick = function() {
+          ctx.lineWidth=3;
+        }
+        button_medidum.onclick = function() {
+          ctx.lineWidth=8;
+        }
+        // button_bold.onclick = function() {
+        //   ctx.lineWidth=10;
+        // }
+        button_black.onclick = function() {
+          ctx.strokeStyle="#000000";
+          // JQuery(function($) {
+          //   $(".picker").spectrum("set", "#000000");
+          // })
+        }
+        // button_white.onclick = function() {
+        //   ctx.strokeStyle="#ffffff";
+        //   // JQuery(function($) {
+        //   //   $(".picker").spectrum("set", "#ffffff");
+        //   // })
+        // }
+        // button_red.onclick = function() {
+        //   ctx.strokeStyle="#ff0000";
+        //   // JQuery(function($) {
+        //   //   $(".picker").spectrum("set", "#ff0000");
+        //   // })
+        // }
+
+        canvas.addEventListener("mousedown",onMouseDown,false);
+        canvas.addEventListener("mousemove",onMouseMove,false);
+        canvas.addEventListener("mouseup",onMouseUp,false);
+        canvas.addEventListener("touchstart",onDown,false);
+        canvas.addEventListener("touchmove",onMove,false);
+        canvas.addEventListener("touchend",onUp,false);
+
+        drawImage(canvas,imagePath);
+
+        function drawImage(canvas,imagePath){
+            //console.log("draw");
+            const image = new Image();
+            image.addEventListener("load",function (){
+              var originalW=image.naturalWidth;
+              var originalH=image.naturalHeight;
+              var windowW=window.parent.screen.width;
+              console.log(originalW);
+              var imageHeight = originalH*(windowW/originalW);
+                  canvas.width=windowW;
+                 canvas.height=imageHeight;
+
+
+                ctx.drawImage(image, 0, 0,900,1200,0,0,windowW,imageHeight);
+              //  console.log("load!");
+            });
+            image.src = imagePath;
+        }
+
+        function onMouseDown(event){
+          ox=event.clientX-event.target.getBoundingClientRect().left;
+          oy=event.clientY-event.target.getBoundingClientRect().top ;
+          mf=true;
+        }
+        function onMouseMove(event){
+          if(mf){
+            x=event.clientX-event.target.getBoundingClientRect().left;
+            y=event.clientY-event.target.getBoundingClientRect().top ;
+            drawLine();
+            ox=x;
+            oy=y;
+          }
+        }
+        function onMouseUp(event){
+          mf=false;
+        }
+      function onDown(event){
+        mf=true;
+        ox=event.touches[0].pageX-event.target.getBoundingClientRect().left;
+        oy=event.touches[0].pageY-event.target.getBoundingClientRect().top;
+        event.stopPropagation();
+      }
+      function onMove(event){
+        if(mf){
+          x=event.touches[0].pageX-event.target.getBoundingClientRect().left;
+          y=event.touches[0].pageY-event.target.getBoundingClientRect().top;
+          drawLine();
+          ox=x;
+          oy=y;
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }
+      function onUp(event){
+        mf=false;
+        event.stopPropagation();
+      }
+      //
+      function clearCan(){
+        ctx.fillStyle="rgb(255,255,255)";
+        ctx.fillRect(0,0,canvas.getBoundingClientRect().width,canvas.getBoundingClientRect().height);
+        drawImage(canvas,imagePath);
+      }
+        function drawLine() {
+          ctx.beginPath();
+          ctx.moveTo(ox,oy);
+          ctx.lineTo(x,y);
+          ctx.stroke();
+        }
+    </script>
+
+</html>

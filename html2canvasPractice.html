@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScriptで撮るスクリーンショット</title>
+</head>
+<body>
+
+  <hr>
+  <div style="background-color : #AAEEDD"><h1>JavaScriptで撮るスクリーンショット</h1></div>
+  <div id="target">
+  <h2>導入方法と処理概要</h2>
+  <table border="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333" style="table-layout: fixed;">
+    <tr>
+      <th bgcolor="#7b9ad0" width="40"><font color="#FFFFFF">No</font></th>
+      <th bgcolor="#7b9ad0" width="230"><font color="#FFFFFF">概要</font></th>
+      <th bgcolor="#7b9ad0" width="230"><font color="#FFFFFF">補足</font></th>
+    </tr>
+    <tr>
+      <td bgcolor="#b1d7e4" width="40" align="right">１</td>
+      <td bgcolor="#FFFFFF" width="230" >html2canvas.jsを読み込む</td>
+      <td bgcolor="#FFFFFF" width="230" ></td>
+    </tr>
+    <tr>
+      <td bgcolor="#b1d7e4" width="40" align="right">２</td>
+      <td bgcolor="#FFFFFF" width="230" >任意のタイミングでhtml2canvas関数を呼ぶ</td>
+      <td bgcolor="#FFFFFF" width="230" >※今回はオンロード処理</td>
+    </tr>
+    <tr>
+      <td bgcolor="#b1d7e4" width="40" align="right">３</td>
+      <td bgcolor="#FFFFFF" width="230" >onrendered 処理にて指定のElementに画像を追記</td>
+      <td bgcolor="#FFFFFF" width="230" >※[img]タグの[src]や、[a]タグの[href]など</td>
+    </tr>
+  </table>
+  </div>
+  <br>
+  <hr>
+  <h3>↓↓ここから画像↓↓　（上の対象のDIVを画像化）<h3>
+  <img src="" id="result" />
+  <h3>↑↑ここまで画像↑↑</h3>
+
+  <hr>
+
+  <a href="" id="ss" download="html_ss.png">スクリーンショット(document.body全体)をダウンロード</a>
+
+  <hr>
+  <h3>注意</h3>
+  <ul>
+    <li>実際にはスクリーンショットを撮っているわけではない</li>
+    <li>html2canvasは、HTML内のDOMやCSSを解釈してCanvas上に描画するライブラリ</li>
+    <li>つまり、レンダリングエンジンに近い動作をする</li>
+    <li>そのため、ブラウザと異なる表示がされる場合がある</li>
+    <li>flashやapplet,iframe（別URL）はうまくキャプチャできない</li>
+  </ul>
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+  <script>
+    //ロードされた際の処理として実施：
+    window.onload = function(){
+
+      //HTML内に画像を表示
+      html2canvas(document.getElementById("target"),{
+        onrendered: function(canvas){
+          //imgタグのsrcの中に、html2canvasがレンダリングした画像を指定する。
+          var imgData = canvas.toDataURL();
+          document.getElementById("result").src = imgData;
+        }
+      });
+
+      //ボタンを押下した際にダウンロードする画像を作る
+      html2canvas(document.body,{
+        onrendered: function(canvas){
+          //aタグのhrefにキャプチャ画像のURLを設定
+          var imgData = canvas.toDataURL();
+          document.getElementById("ss").href = imgData;
+        }
+      });
+
+    }
+  </script>
+
+</body>
+</html>

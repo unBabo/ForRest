@@ -1,0 +1,10 @@
+body{
+  margin:0;
+  padding:0;
+  height:0px;
+}
+
+
+body::-webkit-scrollbar {  /* Chrome, Safari 対応 */
+        display:none;
+}

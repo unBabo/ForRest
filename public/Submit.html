@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="./main.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <title>送信</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
+</head>
+
+<body>
+    <ul id="messages"></ul>
+    <form id="message_form" action="#">
+      <input id="input_msg" autocomplete="off" /><button>Send</button>
+    </form>
+      <img src="" id="result" />
+    </body>
+
+  <script>
+      var socketio = io();
+      $(function(){
+          $('#message_form').submit(function(){
+            socketio.emit('message', $('#input_msg').val());
+            $('#input_msg').val('');
+            return false;
+          });
+          socketio.on('message',function(msg){
+            $('#messages').append($('<li>').text(msg));
+          });
+        });
+    </script>
+
+<!-- html2canvas部分 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+</html>

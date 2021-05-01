@@ -8,3 +8,9 @@ body{
 body::-webkit-scrollbar {  /* Chrome, Safari 対応 */
         display:none;
 }
+
+img{
+  position:absolute;
+  left:130px;
+  height:1000px;
+}
